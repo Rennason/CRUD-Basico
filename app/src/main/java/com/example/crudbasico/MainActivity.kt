@@ -8,18 +8,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.crudbasico.adapter.ListAdapter
 import com.example.crudbasico.db.DbHandler
-import com.example.crudbasico.model.Person
+import com.example.crudbasico.model.Notas
 
 class MainActivity : AppCompatActivity() {
 
-    // Iniciando a RecyclerView
     var listaAdapter: ListAdapter? = null
     var linearLayoutManager: LinearLayoutManager? = null
     val btnInsert by lazy { findViewById<Button>(R.id.btnInsert) }
     val recyclerview by lazy { findViewById<RecyclerView>(R.id.recyclerView) }
 
-    // SQLite
-    var pessoaList = ArrayList<Person>()
+    var pessoaList = ArrayList<Notas>()
+    // SQLite - Banco Local no celular
     var databaseHandler = DbHandler(this)
 
 
@@ -31,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         btnInsert.setOnClickListener {
             val intent = Intent(this, NameActivity::class.java)
+
             startActivityForResult(intent,1)
         }
     }
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView(){
-        pessoaList = databaseHandler.pessoas()
+        pessoaList = databaseHandler.notas()
         listaAdapter = ListAdapter(pessoaList,this, this::deleteAdapter)
         linearLayoutManager = LinearLayoutManager(this)
         recyclerview.layoutManager = linearLayoutManager

@@ -6,7 +6,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.crudbasico.db.DbHandler
-import com.example.crudbasico.model.Person
+import com.example.crudbasico.model.Notas
 
 class NameActivity : AppCompatActivity() {
 
@@ -22,26 +22,25 @@ class NameActivity : AppCompatActivity() {
         val btnInsertNome = findViewById<Button>(R.id.btnInsertNome)
         val btnCancel = findViewById<Button>(R.id.btnCancel)
         val etNome = findViewById<EditText>(R.id.editText)
-        var positionStr = position.toString()
 
         if(edit){
-            val pessoa = databaseHandler.getPessoa(positionStr)
-            etNome.setText(pessoa.nome)
+            val nota = databaseHandler.getNota(position)
+            etNome.setText(nota.descricao)
             btnInsertNome.setText("Editar")
         }
         btnInsertNome.setOnClickListener {
             if(etNome.text.toString() == ""){
-                Toast.makeText(this,"Nome está vazio.",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,"Descrição vazia.",Toast.LENGTH_SHORT).show()
             }
             else {
                 if(edit){
-                    val pessoa = Person(positionStr, etNome.text.toString())
-                    databaseHandler.updatePessoa(pessoa)
+                    val nota = Notas(position, etNome.text.toString())
+                    databaseHandler.updateNota(nota)
                     finish()
                 }
                 else {
-                    val pessoa = Person("0", etNome.text.toString())
-                    databaseHandler.addPessoa(pessoa)
+                    val nota = Notas(0, etNome.text.toString())
+                    databaseHandler.addNota(nota)
                     finish()
                 }
             }

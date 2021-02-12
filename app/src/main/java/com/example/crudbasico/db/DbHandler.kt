@@ -4,13 +4,13 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.crudbasico.model.Person
+import com.example.crudbasico.model.Notas
 
-class DbHandler (ctx: Context): SQLiteOpenHelper(ctx,DB_NAME,null,DB_VERSION) {
+class DbHandler (ctx: Context): SQLiteOpenHelper(ctx,DB_NAME,null, DB_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase?) {
         val CREATE_TABLE =
-            "CREATE TABLE $TABLE_NAME ($CPF INTEGER PRIMARY KEY, $NAME TEXT);"
+            "CREATE TABLE $TABLE_NAME ($ID INTEGER PRIMARY KEY, $DESCRICAO TEXT);"
         db?.execSQL(CREATE_TABLE)
     }
 
@@ -20,62 +20,62 @@ class DbHandler (ctx: Context): SQLiteOpenHelper(ctx,DB_NAME,null,DB_VERSION) {
         onCreate(db)
     }
 
-    fun addPessoa(pessoa: Person): Boolean{
+    fun addNota(nota: Notas): Boolean{
         val db = this.writableDatabase
         val values = ContentValues()
-        values.put(NAME, pessoa.nome)
+        values.put(DESCRICAO, nota.descricao)
         val _success = db.insert(TABLE_NAME,null,values)
         return (("$_success").toInt() != -1)
     }
 
-    fun getPessoa(_cpf: String): Person {
-        val pessoa = Person()
+    fun getNota(_id: Int): Notas {
+        val nota = Notas()
         val db = writableDatabase
-        val selectQuery = "SELECT * FROM $TABLE_NAME WHERE $CPF = $_cpf"
+        val selectQuery = "SELECT * FROM $TABLE_NAME WHERE $ID = $_id"
         val cursor = db.rawQuery(selectQuery, null)
         cursor?.moveToFirst()
-        pessoa.cpf = cursor.getString(cursor.getColumnIndex(CPF))
-        pessoa.nome = cursor.getString(cursor.getColumnIndex(NAME))
+        nota.id = cursor.getInt(cursor.getColumnIndex(ID))
+        nota.descricao = cursor.getString(cursor.getColumnIndex(DESCRICAO))
         cursor.close()
-        return pessoa
+        return nota
     }
 
-    fun pessoas(): ArrayList<Person> {
-        val pessoaList = ArrayList<Person>()
+    fun notas(): ArrayList<Notas> {
+        val notaList = ArrayList<Notas>()
         val db = writableDatabase
         val selectQuery = "SELECT * FROM $TABLE_NAME"
         val cursor = db.rawQuery(selectQuery, null)
         if(cursor != null){
             if(cursor.moveToFirst()){
                 do{
-                    val pessoa = Person()
-                    pessoa.cpf = cursor.getString(cursor.getColumnIndex(CPF))
-                    pessoa.nome = cursor.getString(cursor.getColumnIndex(NAME))
-                    pessoaList.add(pessoa)
+                    val nota = Notas()
+                    nota.id = cursor.getInt(cursor.getColumnIndex(ID))
+                    nota.descricao = cursor.getString(cursor.getColumnIndex(DESCRICAO))
+                    notaList.add(nota)
                 }while(cursor.moveToNext())
             }
         }
         cursor.close()
-        return pessoaList
+        return notaList
     }
 
-    fun updatePessoa(pessoa: Person): Boolean{
+    fun updateNota(nota: Notas): Boolean{
         val db = this.writableDatabase
         val values = ContentValues().apply {
-            put(NAME, pessoa.nome)
+            put(DESCRICAO, nota.descricao)
         }
-        val _success = db.update(TABLE_NAME, values, CPF + "=?", arrayOf(pessoa.cpf)).toLong()
+        val _success = db.update(TABLE_NAME, values, ID + "=?", arrayOf(nota.id.toString())).toLong()
         db.close()
         return ("$_success").toInt() != -1
     }
 
-    fun deletePessoa(_cpf: String): Boolean {
+    fun deleteNota(_id: Int): Boolean {
         val db = this.writableDatabase
-        val _success = db.delete(TABLE_NAME, CPF + "=?", arrayOf(_cpf)).toLong()
+        val _success = db.delete(TABLE_NAME, ID + "=?", arrayOf(_id.toString())).toLong()
         return ("$_success").toInt() != -1
     }
 
-    fun deleteAllPessoa(): Boolean {
+    fun deleteAllNota(): Boolean {
         val db = this.writableDatabase
         val _success = db.delete(TABLE_NAME, null,null).toLong()
         db.close()
@@ -84,9 +84,9 @@ class DbHandler (ctx: Context): SQLiteOpenHelper(ctx,DB_NAME,null,DB_VERSION) {
 
     companion object {
         private val DB_VERSION = 1
-        private val DB_NAME = "cadastro_db"
-        private val TABLE_NAME = "Pessoa"
-        private val CPF = "CPF"
-        private val NAME = "Nome"
+        private val DB_NAME = "notas_db"
+        private val TABLE_NAME = "Notas"
+        private val ID = "ID"
+        private val DESCRICAO = "DESCRICAO"
     }
 }
